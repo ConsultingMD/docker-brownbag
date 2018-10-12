@@ -1,0 +1,57 @@
+FROM ruby:2.1-alpine
+
+RUN apk add --no-cache \
+  bash \
+  build-base \
+  curl \
+  file-dev \
+  git \
+  libmagic \
+  linux-headers \
+  mariadb-dev \
+  nginx \
+  openssh
+
+COPY Gemfile /data/app/
+COPY Gemfile.lock /data/app/
+RUN mkdir /data/app/vendor
+COPY vendor /data/app/vendor/
+WORKDIR /data/app
+
+RUN bundle install --deployment
+
+ENV WAIT_TIMEOUT=60
+ENV DEPENDENCY_SERVICES='STONE_SETUP VAULT DYNAMODB KINESIS MYSQL'
+
+ENV STONE_SETUP_PROTOCOL=http
+ENV STONE_SETUP_HOST=localhost
+ENV STONE_SETUP_PORT=80
+
+ENV VAULT_HOST=localhost
+ENV VAULT_PORT=8200
+ENV VAULT_ADDR=http://localhost:8200
+ENV VAULT_TOKEN=myroot
+
+ENV DYNAMODB_HOST=localhost
+ENV DYNAMODB_PORT=10600
+ENV DYNAMODB_ENDPOINT=http://localhost:10600
+
+ENV KINESIS_HOST=localhost
+ENV KINESIS_PORT=10500
+ENV KINESIS_ENDPOINT=localhost:10500
+
+ENV MYSQL_HOST=localhost
+ENV MYSQL_PORT=3306
+ENV DATABASE_URL=mysql2://root@localhost/stone-dev
+
+ENV AWS_REGION=us-east-1
+ENV AWS_DEFAULT_REGION=us-east-1
+ENV AWS_ACCESS_KEY_ID=default-value
+ENV AWS_SECRET_ACCESS_KEY=default-value
+ENV AWS_SECRET_KEY=default-value
+ENV STACK_NAME=my-stack
+
+COPY . /data/app/
+
+CMD vendor/scaffold/script/wait-for-dependencies.sh && \
+  bin/rails s -b 0.0.0.0
