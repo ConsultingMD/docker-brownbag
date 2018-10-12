@@ -1,0 +1,11 @@
+We're going to be using Docker more and more in our development and release processes. The Platform team has been working extensively with it, so we've built up some expertise. As we give service owners the ability to control more about how your apps are running, you'll get more exposure to Docker.
+
+After attending this brownbag, you will:
+
+- Be familiar with Docker concepts are and how they work,
+- Understand what best-practices are when using Docker tooling,
+- Know what the role of Docker is in our development and release process,
+- Be able to write and update Dockerfiles for your apps to control how they behave on Pancakes and production,
+- Be prepared for an upcoming ECS brownbag where we will plan the migration effort
+
+Please come with your laptop; we'll be working together through some examples.
