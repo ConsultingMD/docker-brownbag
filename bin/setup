@@ -1,2 +1,72 @@
 #!/usr/bin/env bash
+set -e
 
+# Colors for friendly messages
+COLOR_RESET='\033[0m'
+COLOR_LIGHT_RED='\033[0;91m'
+
+function fail_script {
+  echo -e "\n🚨 ${COLOR_LIGHT_RED} bin/setup did not complete successfully! Please check the output.${COLOR_RESET}"
+  exit 1
+}
+
+function is_osx {
+  [[ $OSTYPE =~ "darwin" ]]
+}
+
+function is_linux {
+  [[ $OSTYPE =~ "linux" ]]
+}
+
+function docker_installed {
+  hash docker 2>/dev/null
+}
+
+function install_docker {
+  echo "Installing Docker on your system."
+  if is_osx; then
+    brew cask install docker
+    echo "Please run the Docker app."
+    read -p "Once it's running, hit enter to proceed." </dev/tty
+  elif is_linux; then
+    sudo apt update && sudo apt install \
+      apt-transport-https \
+      ca-certificates \
+      curl \
+      software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository \
+      "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) \
+      stable"
+    sudo apt update
+    sudo apt install docker-ce
+  else
+    echo "Sorry, this script doesn't support Docker installation for your platform."
+    fail_script
+  fi
+}
+
+function setup_dockerhub {
+  echo "Do you have a Dockerhub account already set up?"
+  select yn in "Yes" "No"; do
+      case $yn in
+          Yes ) break;;
+          No ) prompt_dockerhub_signup; exit;;
+      esac
+  done
+  read -p "Once you're signed in on the Dockerhub website, hit enter to proceed." </dev/tty
+  echo "Logging you into Dockerhub..."
+  docker login
+}
+
+function prompt_dockerhub_signup {
+  echo "Please go to https://hub.docker.com/ and create an account."
+}
+
+echo "Welcome to the Docker brownbag! Let's get you set up..."
+
+docker_installed || install_docker
+setup_dockerhub
+
+echo "You're all done!"
