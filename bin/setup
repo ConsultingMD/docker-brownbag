@@ -64,8 +64,13 @@ function prompt_dockerhub_signup {
   echo "Please go to https://hub.docker.com/ and create an account."
 }
 
+function clone_submodules {
+  git submodule init && git submodule update --recursive
+}
+
 echo "Welcome to the Docker brownbag! Let's get you set up..."
 
+clone_submodules
 docker_installed || install_docker
 setup_dockerhub
 
