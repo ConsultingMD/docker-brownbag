@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: app
+    ports:
+      - 8080:4567
+    volumes:
+      - ./:/data/app
+      - vendor:/data/app/vendor
+
+volumes:
+  vendor:
