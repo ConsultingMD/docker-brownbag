@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -e
 
 # Colors for friendly messages
 COLOR_RESET='\033[0m'
@@ -92,5 +91,4 @@ echo "Welcome to the Docker brownbag! Let's get you set up..."
 prepare_stone
 docker_installed || install_docker
 setup_dockerhub
-
 echo "You're all done!"
